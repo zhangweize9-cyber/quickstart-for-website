@@ -14,6 +14,14 @@
         rewrite * /hello.txt
         file_server
     }
+
+    handle_path /markdown* {
+        root * /var/www/greetings/markdown
+
+        file_server {
+            browse
+        }
+    }
 }
 
 # Refer to the Caddy docs for more information:

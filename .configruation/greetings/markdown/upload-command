@@ -1,0 +1,3 @@
+# .configruation/markdown/
+
+rsync -avzP --delete -e "ssh -i ~/.ssh/<path>.pem -o StrictHostKeyChecking=accept-new" .configruation/greetings/markdown/ root@<ip>:/var/www/greetings/markdown/
