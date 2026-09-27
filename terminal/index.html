@@ -1,0 +1,48 @@
+<!doctype html>
+  <html>
+    <head>
+      <link rel="stylesheet" href="xterm.css" />
+      <script src="xterm.js"></script>
+    </head>
+    <body>
+      <div id="terminal"></div>
+      <script>
+        var term = new Terminal({
+          cursorBlink: true
+        });
+
+        var inputBuffer = '';
+        term.write("Hello from xterm.js!\r\n$ ");
+        
+        term.onData(function(e) {
+            switch (e) {
+                case '\r':
+                    term.write('\r\n');
+                    if (inputBuffer.trim().length > 0) {
+                        term.write('You entered: ' + inputBuffer + '\r\n');
+                    }
+                    inputBuffer = '';
+                    term.write('$ ');
+                    break;
+
+                case '\u007F':
+                    if (inputBuffer.length > 0) {
+                        inputBuffer = inputBuffer.slice(0, -1);
+                        term.write('\b \b');
+                    }
+                    break;
+
+                default:
+                    if (e >= ' ' || e === '\t') {
+                        inputBuffer += e;
+                        term.write(e);
+                    }
+                    break;
+            }
+        });
+
+        term.open(document.getElementById('terminal'));
+        term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
+      </script>
+    </body>
+  </html>

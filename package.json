@@ -2,9 +2,14 @@
   "scripts": {
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:preview": "vitepress preview",
+    "terminal:dev": "live-server terminal"
   },
   "devDependencies": {
+    "live-server": "^1.2.2",
     "vitepress": "^2.0.0-alpha.20"
+  },
+  "dependencies": {
+    "@xterm/xterm": "^6.0.0"
   }
 }
