@@ -3,13 +3,21 @@
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
-    "terminal:dev": "live-server terminal"
+    "terminal:dev": "vite",
+    "terminal:build": "vite build",
+    "terminal:preview": "vite preview"
   },
   "devDependencies": {
     "live-server": "^1.2.2",
+    "vite-plugin-node-polyfills": "^0.28.0",
     "vitepress": "^2.0.0-alpha.20"
   },
   "dependencies": {
-    "@xterm/xterm": "^6.0.0"
+    "@xterm/xterm": "^6.0.0",
+    "buffer": "^6.0.3",
+    "jquery.terminal": "^2.47.0",
+    "memfs": "^4.79.0",
+    "path-browserify": "^1.0.1",
+    "xterm-readline": "^1.2.2"
   }
 }
