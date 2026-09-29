@@ -5,9 +5,9 @@ export async function handleCommand(cmdline, term) {
   if (!cmdline.trim()) return;
   const response = await bash.exec(cmdline);
   if (response.stdout) {
-    term.write(response.stdout.replace(/\r?\n/g + '\r\n'));
+    term.write(response.stdout.replace(/\r?\n/g, '\r\n'));
   }
   if (response.stderr) {
-    term.write(response.stderr.replace(/\r?\n/g + '\r\n'));
+    term.write(response.stderr.replace(/\r?\n/g, '\r\n'));
   }
 }
