@@ -1,5 +1,6 @@
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
+import { handleCommand } from './utils/handle-cmd.js';
 
 const term = new Terminal({
   cursorBlink: true,
@@ -11,35 +12,22 @@ var inputBuffer = '';
 term.open(document.getElementById('terminal'));
 term.write(document.getElementById('greetings'));
 
-function handleCommand(cmd) {
-  if (!cmd) return;
-  const [actions, ...args] = cmd.split(' ');
-
-  switch (actions) {
-    case 'help':
-      term.write("Command: help, clear, echo, cat\r\n");
-      break;
-    case 'echo':
-      term.write(args.join(' \r\n'));
-      break;
-    case 'clear':
-      term.clear();
-      break;
-    default:
-      term.write('command not found\r\n');
-  }
+function printPrompt() {
+  term.write('\r\n$ ');
 }
 
-term.onData(function(e) {
+printPrompt();
+
+term.onData(async function(e) {
     switch (e) {
         case '\r':
             term.write('\r\n');
             if (inputBuffer.trim().length > 0) {
-                term.write('You entered: ' + inputBuffer + '\r\n');
+              term.write('You entered: ' + inputBuffer + '\r\n');
+              await handleCommand(inputBuffer, term);
             }
-            handleCommand(inputBuffer);
             inputBuffer = '';
-            term.write('$ ');
+            printPrompt();
             break;
         case '\u007F':
             if (inputBuffer.length > 0) {
@@ -47,6 +35,11 @@ term.onData(function(e) {
                 term.write('\b \b');
             }
             break;
+      case '\x03':
+        term.write("^C\r\n");
+        inputBuffer = '';
+        printPrompt();
+        break;
         default:
             if (e >= ' ' || e === '\t') {
                 inputBuffer += e;
@@ -57,7 +50,7 @@ term.onData(function(e) {
 });
 
 // WIP: ctrl-c key event hook
-// term.onKey(({ key, domEvent }) => {
+// term.onKey(({ domEvent }) => {
 //   if (domEvent.ctrlKey && domEvent.key === 'c') {
 //     domEvent.preventDefault();
 //     term.write('^C\r\n')
