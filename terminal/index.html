@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
-<!-- <script src="https://unpkg.com/jquery.terminal@2.x.x/js/jquery.terminal.min.js"></script> -->
-<!-- <link rel="stylesheet" href="https://unpkg.com/jquery.terminal@2.x.x/css/jquery.terminal.min.css"/> -->
+  <meta charset="UTF-8">
+  <title>Terminal</title>
+  <link rel="stylesheet" href="./style/ter-windows.css">
 </head>
 <body>
   <template id="greetings">
-    Hello World
+    Hello World!
   </template>
-  <div id="terminal"></div>
-  <script type="module" src="terminal-search.js"></script>
+  <div class="terminal-wrapper">
+    <div id="terminal"></div>
+    <script type="module" src="terminal-search.js"></script>
+  </div>
 </body>
 </html>

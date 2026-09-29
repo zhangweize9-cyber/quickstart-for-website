@@ -1,16 +1,30 @@
 import { Terminal } from '@xterm/xterm';
+import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
+
 import { handleCommand } from './utils/handle-cmd.js';
 
 const term = new Terminal({
   cursorBlink: true,
-  rows: 20,
-  cols: 80
+  theme: {
+    background: '#1e1e1e',
+    foreground: '#ffffff'
+  },
 });
+const fitAddon = new FitAddon();
+term.loadAddon(fitAddon);
+
 var inputBuffer = '';
 
+const template = document.getElementById('greetings');
+const greetingsText = template.content.textContent;
+
 term.open(document.getElementById('terminal'));
-term.write(document.getElementById('greetings'));
+fitAddon.fit();
+window.addEventListener('resize', () => {
+  fitAddon.fit();
+});
+term.write(greetingsText.replace(/\r?\n/g, '\r\n'));
 
 function printPrompt() {
   term.write('\r\n$ ');
