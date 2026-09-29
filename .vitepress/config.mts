@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "TEST",
   description: "TEST PASSED",
+  srcDir: './markdown/',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
@@ -16,7 +17,8 @@ export default defineConfig({
         text: 'Examples',
         items: [
           { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
+          { text: 'Runtime API Examples', link: '/api-examples' },
+          { text: 'Hello', link: '/hello' }
         ]
       }
     ],
