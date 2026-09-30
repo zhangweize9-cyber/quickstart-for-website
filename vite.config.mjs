@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
   root: resolve(import.meta.dirname, 'terminal'),
+  // root: resolve(import.meta.dirname, 'src'),
 
   resolve: {
     alias: {
@@ -55,5 +57,6 @@ export default defineConfig({
         process: true,
       },
     }),
+    react()
   ],
 });
