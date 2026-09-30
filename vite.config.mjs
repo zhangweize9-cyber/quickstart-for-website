@@ -28,7 +28,7 @@ export default defineConfig({
   },
 
   build: {
-    outDir: resolve(import.meta.dirname, '../dist'), 
+    outDir: resolve(import.meta.dirname, 'dist'), 
     assetsDir: 'assets',  
     sourcemap: false,
     minify: 'esbuild',  
