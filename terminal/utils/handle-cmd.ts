@@ -1,6 +1,6 @@
 import { Bash } from 'just-bash';
 
-export async function handleCommand(cmdline, term) {
+export async function handleCommand(cmdline: string, term: any) {
   const bash = new Bash({});
   if (!cmdline.trim()) return;
   const response = await bash.exec(cmdline);

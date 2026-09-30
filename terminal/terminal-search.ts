@@ -2,7 +2,7 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 
-import { handleCommand } from './utils/handle-cmd.js';
+import { handleCommand } from './utils/handle-cmd.ts';
 
 const term = new Terminal({
   cursorBlink: true,
@@ -16,10 +16,14 @@ term.loadAddon(fitAddon);
 
 var inputBuffer = '';
 
-const template = document.getElementById('greetings');
+const template = document.getElementById('greetings') as HTMLTemplateElement;
 const greetingsText = template.content.textContent;
 
-term.open(document.getElementById('terminal'));
+const termInput = document.getElementById('terminal');
+if (termInput) {
+    term.open(termInput);
+}
+
 fitAddon.fit();
 window.addEventListener('resize', () => {
   fitAddon.fit();
