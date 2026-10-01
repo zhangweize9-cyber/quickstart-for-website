@@ -1,7 +1,7 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   
-  "entryPoints": ["./terminal/terminal-search.ts", "./terminal/utils/handle-cmd.ts"],
+  "entryPoints": ["./src/terminal-search.ts", "./src/utils/handle-cmd.ts"],
   "out": "./docs/api",
   "tsconfig": "./tsconfig.json",
   

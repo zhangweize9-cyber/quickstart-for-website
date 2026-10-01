@@ -9,29 +9,20 @@ If you have perfected the interface for this project and want to submit a Pull r
 Here's the file structure:  
 
 ```
-.
-├── dist
-│   ├── assets
-│   └── index.html
-├── docs
-│   └── api
-├── LICENSE
+src/
+├── index.html
 ├── markdown
 │   ├── api-examples.md
 │   ├── hello.mdx
 │   ├── index.md
 │   └── markdown-examples.md
-├── README.md
-├── src
-│   ├── index.html
-│   └── script
-├── terminal
-│   ├── index.html
-│   ├── style
-│   ├── terminal-search.ts
-│   ├── utils
-│   └── vite-env.d.ts
-├── tsconfig.json
-├── typedoc.json
-└── vite.config.mjs
+├── style
+│   └── ter-windows.css
+├── terminal-search.ts
+├── utils
+│   ├── handle-cmd.ts
+│   ├── react-doc
+│   │   └── doc-homepage.tsx
+│   └── vir-filesystem.ts
+└── vite-env.d.ts
 ```

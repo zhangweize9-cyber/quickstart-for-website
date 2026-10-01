@@ -1,15 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Terminal</title>
-</head>
-<body>
-  <template id="greetings">
-    Hello World!
-  </template>
-  <div id="react-doc">
-    <script type="module" src="./script/main.jsx"></script>
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Terminal</title>
+    <link rel="stylesheet" href="./style/ter-windows.css" />
+  </head>
+  <body>
+    <template id="greetings">
+      Hello World! https://github.com/zhangweize9-cyber
+    </template>
+    <!-- <div id="react-doc"> -->
+    <!--   <script type="module" src="./utils/main.tsx"></script> -->
+    <!-- </div> -->
+    <div class="terminal-wrapper">
+      <div id="terminal"></div>
+      <script type="module" src="terminal-search.ts"></script>
+    </div>
+  </body>
 </html>
