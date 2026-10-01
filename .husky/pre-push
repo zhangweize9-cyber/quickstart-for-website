@@ -1,0 +1,12 @@
+#!/bin/bash
+echo "[Git Pre-Push Check] Created by husky, eslint."
+pnpm exec eslint
+
+STATUS=$?
+
+if [ $STATUS -ne 0 ]; then
+    echo "[Failed] Check failed!"
+    exit 1
+fi
+
+echo "[Passed] Check passed!"

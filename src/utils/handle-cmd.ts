@@ -25,6 +25,7 @@
 //                  with extra newline characters removed to prevent formatting issues.
 //
 
+import type { Terminal } from "@xterm/xterm";
 import { Bash, defineCommand } from "just-bash";
 
 /**
@@ -44,19 +45,21 @@ class DefineCommandOutput {
 
   public handleHello(args: string[]) {
     return {
-      stdout: this.termIO.stdout + "hello" + " " + args,
+      stdout: this.termIO.stdout + "hello" + " " + args.join(" "),
       stderr: this.termIO.stderr,
       exitCode: this.termIO.exitCode,
     };
   }
 
   public getCmd() {
-    return [defineCommand("hello", async (args) => this.handleHello(args))];
+    return [
+      defineCommand("hello", (args) => Promise.resolve(this.handleHello(args))),
+    ];
   }
 }
 
 const dfo = new DefineCommandOutput();
-export async function handleCommand(cmdline: string, term: any) {
+export async function handleCommand(cmdline: string, term: Terminal) {
   /**
    * @summary Initialize the executable command envirorment.
    * @param customCommands - Custom executable commands.

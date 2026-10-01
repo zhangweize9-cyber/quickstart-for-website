@@ -35,8 +35,8 @@ import "@xterm/xterm/css/xterm.css";
  */
 import { handleCommand } from "./utils/handle-cmd.ts";
 
-var inputBuffer = "";
-var topLine = "\r\n";
+let inputBuffer = "";
+const topLine = "\r\n";
 
 const term = new Terminal({
   cursorBlink: true,
@@ -46,7 +46,7 @@ const term = new Terminal({
   },
 });
 
-function termWindowsMountTohtml(term: any) {
+function termWindowsMountTohtml(term: Terminal) {
   /**
    * @summary Xterm plugins
    * @see {
@@ -89,7 +89,7 @@ function printPrompt() {
 termWindowsMountTohtml(term);
 printPrompt();
 
-async function termInputOnEnter(term: any) {
+async function termInputOnEnter(term: Terminal) {
   term.write("\r\n");
   if (inputBuffer.trim().length > 0) {
     /**
@@ -104,7 +104,7 @@ async function termInputOnEnter(term: any) {
   printPrompt();
 }
 
-function termInputOnBackspace(term: any) {
+function termInputOnBackspace(term: Terminal) {
   /**
    * @summary When a user makes a mistake while entering a string,
    *          pressing the Backspace key deletes the character.
@@ -118,7 +118,7 @@ function termInputOnBackspace(term: any) {
 term.onData(async function (e) {
   switch (e) {
     case "\r":
-      termInputOnEnter(term);
+      await termInputOnEnter(term);
       break;
     case "\u007F":
       termInputOnBackspace(term);
