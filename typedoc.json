@@ -1,0 +1,23 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  
+  "entryPoints": ["./terminal/terminal-search.ts", "./terminal/utils/handle-cmd.ts"],
+  "out": "./docs/api",
+  "tsconfig": "./tsconfig.json",
+  
+  "plugin": ["typedoc-plugin-markdown"],
+  
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "cleanOutputDir": true,
+  
+  "name": "WebTerminal api docs",
+  "includeVersion": true,
+  "disableSources": false,
+  
+  "outputFileStrategy": "members",
+  "hideBreadcrumbs": false,
+  "hidePageTitle": false,
+  "useCodeBlocks": true
+}

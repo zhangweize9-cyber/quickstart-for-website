@@ -79,7 +79,7 @@ function termWindowsMountTohtml(term: any) {
   window.addEventListener("resize", () => {
     fitAddon.fit();
   });
-  term.write(greetingsText.replace(/\r?\n/g, "\r\n"));
+  term.write(greetingsText?.replace(/\r?\n/g, "\r\n"));
 }
 
 function printPrompt() {
