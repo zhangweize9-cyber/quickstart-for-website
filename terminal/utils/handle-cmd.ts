@@ -9,6 +9,15 @@
 // Support for virtual BusyBox commands,
 // such as `cat`, `ls`, and `cd`, including some custom commands.
 //
+// Class:
+// - DefineCommandOutput: Define terminal commands. {
+//   termIO: Includes standard output, error messages,
+//           and the command execution return value.
+//           { stdout, stderr, exitCode }
+//   getCmd: Hand the command over to the just-bash module for processing.
+//   handleHello: Display "hello" in the terminal when the user says hello.
+// }
+//
 // Functions:
 // - handleCommand: When a user enters a command in the terminal,
 //                  the input is passed to the `Bash` process;
@@ -18,6 +27,12 @@
 
 import { Bash, defineCommand } from "just-bash";
 
+/**
+ * @file Frontend virtual file system
+ * @see {
+ *   @link https://docs.kernel.org/filesystems/index.html
+ * }
+ */
 import { virtualFS } from "./vir-filesystem.ts";
 
 class DefineCommandOutput {
@@ -42,15 +57,27 @@ class DefineCommandOutput {
 
 const dfo = new DefineCommandOutput();
 export async function handleCommand(cmdline: string, term: any) {
+  /**
+   * @summary Initialize the executable command envirorment.
+   * @param customCommands - Custom executable commands.
+   * @param files - Virtual File System.
+   */
   const bash = new Bash({
     customCommands: dfo.getCmd(),
-    // files: {
-    //   "1.txt": "This is 1.txt.",
-    //   "2.txt": "This is 2.txt.",
-    //   "3.txt": "This is 3.txt.",
-    // },
+    /**
+     * @example
+     * files: {
+     *   "1.txt": "This is 1.txt.",
+     *   "2.txt": "This is 2.txt.",
+     *   "3.txt": "This is 3.txt.",
+     * },
+     */
     files: virtualFS,
   });
+
+  /**
+   * @summary Remove extra spaces and line breaks.
+   */
   if (!cmdline.trim()) return;
   const response = await bash.exec(cmdline);
   if (response.stdout) {

@@ -25,6 +25,13 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 
+/**
+ * @file Virtual Busybox instruction set
+ * @see {
+ *   @link https://busybox.net/
+ *   @link https://github.com/vercel-labs/just-bash/blob/main/packages/just-bash/README.md#supported-commands
+ * } for further information.
+ */
 import { handleCommand } from "./utils/handle-cmd.ts";
 
 var inputBuffer = "";
@@ -42,6 +49,10 @@ function termWindowsMountTohtml(term: any) {
   const fitAddon = new FitAddon();
   term.loadAddon(fitAddon);
 
+  /**
+   * @summary Attach the welcome message to the terminal,
+   *          and display the terminal window and input prompt.
+   */
   const template = document.getElementById("greetings") as HTMLTemplateElement;
   const greetingsText = template.content.textContent;
   const termInput = document.getElementById("terminal");
@@ -49,6 +60,11 @@ function termWindowsMountTohtml(term: any) {
     term.open(termInput);
   }
   fitAddon.fit();
+
+  /**
+   * @summary Listen for window resize events and dynamically
+   *          calculate the terminal window's width and height.
+   */
   window.addEventListener("resize", () => {
     fitAddon.fit();
   });
@@ -65,7 +81,11 @@ printPrompt();
 async function termInputOnEnter(term: any) {
   term.write("\r\n");
   if (inputBuffer.trim().length > 0) {
-    // term.write('You entered: ' + inputBuffer + '\r\n');
+    /**
+     * @summary Return the execution output and remove newline characters.
+     * @example
+     * term.write('You entered: ' + inputBuffer + '\r\n');
+     */
     term.write("You entered: " + inputBuffer + topLine);
     await handleCommand(inputBuffer, term);
   }
@@ -74,6 +94,10 @@ async function termInputOnEnter(term: any) {
 }
 
 function termInputOnBackspace(term: any) {
+  /**
+   * @summary When a user makes a mistake while entering a string,
+   *          pressing the Backspace key deletes the character.
+   */
   if (inputBuffer.length > 0) {
     inputBuffer = inputBuffer.slice(0, -1);
     term.write("\b \b");
