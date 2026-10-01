@@ -11,16 +11,15 @@
   }
 
   .terminal-wrapper {
-    width: 92%;
-    height: auto;
-    max-height: 85dvh;
-    padding: 15px;
-    overflow-y: auto;
+    width: calc(100% - 50px);
+    height: calc(100% - 50px);
+    padding: 20px;
     background-color: #1e1e1e;
     box-sizing: border-box;
     border-radius: 8px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
     overflow: hidden;
+    overflow-x: auto !important;
   }
 
   .terminal-wrapper input,
