@@ -23,6 +23,7 @@
 
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { WebLinksAddon } from "@xterm/addon-web-links";
 import "@xterm/xterm/css/xterm.css";
 
 /**
@@ -46,8 +47,18 @@ const term = new Terminal({
 });
 
 function termWindowsMountTohtml(term: any) {
+  /**
+   * @summary Xterm plugins
+   * @see {
+   *   @link https://github.com/xtermjs/xterm.js#addons
+   * }
+   * @class FitAddon
+   * @class WebLinksAddon
+   */
   const fitAddon = new FitAddon();
+  const weblinks = new WebLinksAddon();
   term.loadAddon(fitAddon);
+  term.loadAddon(weblinks);
 
   /**
    * @summary Attach the welcome message to the terminal,
