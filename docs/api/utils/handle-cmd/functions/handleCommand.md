@@ -10,7 +10,7 @@
 function handleCommand(cmdline, term): Promise<void>;
 ```
 
-Defined in: utils/handle-cmd.ts:59
+Defined in: [utils/handle-cmd.ts:59](https://github.com/zhangweize9-cyber/quickstart-for-website/blob/3071172744770016e3eed6d93e4d95603665f17b/src/utils/handle-cmd.ts#L59)
 
 ## Parameters
 
