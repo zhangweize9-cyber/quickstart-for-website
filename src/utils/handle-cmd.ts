@@ -109,7 +109,7 @@ class DefineCommandOutput {
     /**
      * @param naturalLangSearchStatus - Save model switch state.
      */
-    if (naturalLangSearchStatus) {
+    if (naturalLangSearchStatus === "enabled") {
       const generator = await pipeline(
         "text2text-generation",
         "Xenova/LaMini-Flan-T5-783M",
@@ -117,11 +117,11 @@ class DefineCommandOutput {
 
       /**
        * Generate text content based on the model.
-       * FIXME: It seems that you cannot directly assign a value
-       *        using the form `const outputa = output.b`.
-       *  HACK: The current compromise is to use `const genOutput = JSON.stringify(output)` to convert the
-       *        data to a string and then print it directly.
-       *  NOTE: When using `console.log(output)`, it returns type Array.
+       * @bug It seems that you cannot directly assign a value
+       *      using the form `const outputa = output.b`. (fixed)
+       * @workaround The current compromise is to use `const genOutput = JSON.stringify(output)` to convert the
+       *             data to a string and then print it directly.
+       * @note When using `console.log(output)`, it returns type Array.
        *
        * @constant { Array }
        */
