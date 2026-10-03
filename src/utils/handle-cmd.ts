@@ -44,16 +44,28 @@ interface TextGenerationOutput {
 class DefineCommandOutput {
   /**
    * Standard input, output and return values.
+   * `this.termIO.ansi` adds support for terminal color layout.
    *
    * @example
    * this.termIO.stdout = "This is output message."
    * this.termIO.stderr = "This is error message."
    * this.termIO.exitCode = "0" - success
+   *
+   * const colors = this.termIO.ansi
+   * term.write(`${colors.cyan}USAGE:${colors.reset}\n`);
    */
   public termIO = {
     stdout: "[info]",
     stderr: "",
     exitCode: 0,
+    ansi: {
+      reset: "\x1b[0m",
+      bold: "\x1b[1m",
+      red: "\x1b[31m",
+      green: "\x1b[32m",
+      yellow: "\x1b[33m",
+      cyan: "\x1b[36m",
+    },
   };
 
   public handleHello(args: string[]) {

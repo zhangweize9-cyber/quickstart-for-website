@@ -35,8 +35,29 @@ import "@xterm/xterm/css/xterm.css";
  */
 import { handleCommand } from "./utils/handle-cmd.ts";
 
-let inputBuffer = "";
-const topLine = "\r\n";
+/**
+ * @see {
+ *   @link https://en.wikipedia.org/wiki/ANSI_escape_code
+ * }
+ */
+const escapeSeq = {
+  ansi: {
+    arrows: {
+      up: "\x1b[A",
+      down: "\x1b[B",
+      left: "\x1b[C",
+      right: "\x1b[D",
+    },
+  },
+  ascii: {
+    topLine: "\r\n",
+    space: " ",
+    backspace: "\u007f",
+    sigint: "\x03",
+    enter: "\r",
+    deleteChar: "\b \b",
+  },
+};
 
 const term = new Terminal({
   cursorBlink: true,
@@ -79,29 +100,33 @@ function termWindowsMountTohtml(term: Terminal) {
   window.addEventListener("resize", () => {
     fitAddon.fit();
   });
-  term.write(greetingsText?.replace(/\r?\n/g, "\r\n"));
+  term.write(greetingsText?.replace(/\r?\n/g, escapeSeq.ascii.topLine));
 }
 
 function printPrompt() {
-  term.write("\r\n$ ");
+  term.write(escapeSeq.ascii.topLine + "$ ");
 }
 
 termWindowsMountTohtml(term);
 printPrompt();
+let inputBuffer = "";
 
 async function termInputOnEnter(term: Terminal) {
-  term.write("\r\n");
-  if (inputBuffer.trim().length > 0) {
-    /**
-     * @summary Return the execution output and remove newline characters.
-     * @example
-     * term.write('You entered: ' + inputBuffer + '\r\n');
-     */
-    term.write("You entered: " + inputBuffer + topLine);
-    await handleCommand(inputBuffer, term);
+  term.write(escapeSeq.ascii.topLine);
+  try {
+    if (inputBuffer.trim().length > 0) {
+      /**
+       * @summary Return the execution output and remove newline characters.
+       * @example
+       * term.write('You entered: ' + inputBuffer + '\r\n');
+       */
+      term.write("You entered: " + inputBuffer + escapeSeq.ascii.topLine);
+      await handleCommand(inputBuffer, term);
+    }
+  } finally {
+    inputBuffer = "";
+    printPrompt();
   }
-  inputBuffer = "";
-  printPrompt();
 }
 
 function termInputOnBackspace(term: Terminal) {
@@ -111,24 +136,37 @@ function termInputOnBackspace(term: Terminal) {
    */
   if (inputBuffer.length > 0) {
     inputBuffer = inputBuffer.slice(0, -1);
-    term.write("\b \b");
+    term.write(escapeSeq.ascii.deleteChar);
   }
 }
 
 term.onData(async function (e) {
   switch (e) {
-    case "\r":
+    case escapeSeq.ascii.enter:
       await termInputOnEnter(term);
       break;
-    case "\u007F":
+    case escapeSeq.ascii.deleteChar:
       termInputOnBackspace(term);
       break;
-    case "\x03":
-      term.write("^C\r\n");
+    case escapeSeq.ascii.sigint:
+      /**
+       * FIXME: It's currently difficult to capture the Ctrl+C signal because the Windows shortcuts
+       *        for copy and paste are Ctrl+C and Ctrl+V.
+       *        It's hard to determine whether a user presses Ctrl+C to terminate a terminal task
+       *        or to copy and paste content.
+       *        TL;DR: There is a conflict with the Ctrl+C shortcut.
+       */
+      term.write("^C\r\n" + escapeSeq.ascii.sigint);
       inputBuffer = "";
       printPrompt();
       break;
     default:
+      /**
+       * It also enables echoing as you type in the terminal
+       * (placing your input immediately after the prompt).
+       * TODO: When the Tab key is pressed to trigger autocomplete,
+       *       the completion options (WIP) pop up.
+       */
       if (e >= " " || e === "\t") {
         inputBuffer += e;
         term.write(e);
