@@ -168,6 +168,8 @@ async function termInputOnEnter(term: Terminal) {
        */
       term.write("You entered: " + inputBuffer + escapeSeq.ascii.topLine);
       await handleCommand(inputBuffer, term);
+    } else {
+      term.write(escapeSeq.ascii.topLine);
     }
   } finally {
     inputBuffer = "";
@@ -179,10 +181,28 @@ function termInputOnBackspace(term: Terminal) {
   /**
    * @summary When a user makes a mistake while entering a string,
    *          pressing the Backspace key deletes the character.
+   * FIXME: I've tried my best, but I haven't specifically adapted for multilingual characters,
+   *        such as Chinese (which is two characters wide) and Thai (which is arranged from right to left).
+   *        Unless I create a separate module for i18n adaptation in the future,
+   *        the current solution is to determine how many characters are at the cursor position
+   *        based on the character width (I've already done some initial handling for the case
+   *        where Chinese characters are two characters wide).
+   *        For Thai, it seems that to adapt it, I'd have to move the entire cursor to the right,
+   *        but calculating the cursor position is difficult.
+   *        Initially, we only used `inputBuffer = inputBuffer.slice(0, -1)` to
+   *        make a preliminary adaptation for removing spaces in English text.
    */
   if (inputBuffer.length > 0) {
-    inputBuffer = inputBuffer.slice(0, -1);
-    term.write(escapeSeq.ascii.deleteChar);
+    const chars = Array.from(inputBuffer);
+    const lastChar = chars.pop();
+    inputBuffer = chars.join("");
+
+    const isWide = lastChar && lastChar.charCodeAt(0) > 255;
+    if (isWide) {
+      term.write("\b\b \b\b");
+    } else {
+      term.write(escapeSeq.ascii.deleteChar);
+    }
   }
 }
 
@@ -191,7 +211,7 @@ term.onData(async function (e) {
     case escapeSeq.ascii.enter:
       await termInputOnEnter(term);
       break;
-    case escapeSeq.ascii.deleteChar:
+    case escapeSeq.ascii.backspace:
       termInputOnBackspace(term);
       break;
     case escapeSeq.ascii.sigint:
