@@ -191,6 +191,8 @@ function termInputOnBackspace(term: Terminal) {
    *        but calculating the cursor position is difficult.
    *        Initially, we only used `inputBuffer = inputBuffer.slice(0, -1)` to
    *        make a preliminary adaptation for removing spaces in English text.
+   *        nit: Thai is arranged from left to right,
+   *             while Arabic and Hebrew are arranged from right to left.
    */
   if (inputBuffer.length > 0) {
     const chars = Array.from(inputBuffer);
