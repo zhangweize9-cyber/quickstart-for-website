@@ -37,6 +37,10 @@ import { pipeline } from "@huggingface/transformers";
  */
 import { virtualFS } from "./vir-filesystem.ts";
 
+interface TextGenerationOutput {
+  generated_text: string;
+}
+
 class DefineCommandOutput {
   /**
    * Standard input, output and return values.
@@ -115,15 +119,26 @@ class DefineCommandOutput {
        * Generate text content based on the model.
        * FIXME: It seems that you cannot directly assign a value
        *        using the form `const outputa = output.b`.
-       * HACK:  The current compromise is to use `JSON.stringify` to convert the
+       *  HACK: The current compromise is to use `const genOutput = JSON.stringify(output)` to convert the
        *        data to a string and then print it directly.
+       *  NOTE: When using `console.log(output)`, it returns type Array.
        *
        * @constant { Array }
        */
       const output = await generator("how can I become more healthy?", {
         max_new_tokens: 100,
       });
-      const genOutput = JSON.stringify(output);
+
+      /**
+       * To solve this problem, first define an object named `TextGenerationOutput` in
+       * the file header, then define the type of the variable `genOutput` as string, and
+       * return an empty string if `result[0]?.generated_text` has no result.
+       *
+       * @example `console.log(output)`
+       *          `const genOutput = JSON.stringify(output)`
+       */
+      const result = output as TextGenerationOutput[];
+      const genOutput: string = result[0]?.generated_text ?? "";
       return {
         stdout: genOutput,
         stderr: this.termIO.stderr,
