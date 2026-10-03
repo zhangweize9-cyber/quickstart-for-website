@@ -12,7 +12,7 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig([
   {
-    files: ["src/**/*.{ts, tsx}"],
+    files: ["src/**/*.{ts, tsx}", "node_modules/.pnpm_patches/**/*.{ts, tsx}"],
     ignores: ["**/*.config.js", "!**/eslint.config.js"],
     extends: [
       js.configs.recommended,
