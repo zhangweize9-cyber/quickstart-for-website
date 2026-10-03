@@ -40,13 +40,59 @@ import { handleCommand } from "./utils/handle-cmd.ts";
  *   @link https://en.wikipedia.org/wiki/ANSI_escape_code
  * }
  */
-const escapeSeq = {
+interface stdTermEsc {
+  ansi: {
+    arrows: {
+      up: string;
+      down: string;
+      left: string;
+      right: string;
+    };
+    cursor: {
+      hide: string;
+      show: string;
+      save: string;
+      restore: string;
+      to: (line: number, col: number) => string;
+    };
+    erase: {
+      line: string;
+      lineEnd: string;
+      screen: string;
+      scrollback: string;
+    };
+  };
+  ascii: {
+    topLine: string;
+    space: string;
+    backspace: string;
+    sigint: string;
+    enter: string;
+    deleteChar: string;
+  };
+}
+
+const escapeSeq: stdTermEsc = {
   ansi: {
     arrows: {
       up: "\x1b[A",
       down: "\x1b[B",
       left: "\x1b[C",
       right: "\x1b[D",
+    },
+    cursor: {
+      hide: "\x1b[?25l",
+      show: "\x1b[?25h",
+      save: "\x1b[s",
+      restore: "\x1b[u",
+      to: (line: number, col: number) =>
+        `\x1b[${line.toString()};${col.toString()}H`,
+    },
+    erase: {
+      line: "\x1b[2K",
+      lineEnd: "\x1b[K",
+      screen: "\x1b[2J",
+      scrollback: "\x1b[3J",
     },
   },
   ascii: {
@@ -155,6 +201,10 @@ term.onData(async function (e) {
        *        It's hard to determine whether a user presses Ctrl+C to terminate a terminal task
        *        or to copy and paste content.
        *        TL;DR: There is a conflict with the Ctrl+C shortcut.
+       *
+       * @see {
+       *   @link https://github.com/xtermjs/xterm.js/issues/281
+       * }
        */
       term.write("^C\r\n" + escapeSeq.ascii.sigint);
       inputBuffer = "";
