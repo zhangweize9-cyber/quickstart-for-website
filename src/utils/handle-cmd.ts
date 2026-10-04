@@ -7,27 +7,26 @@
 //
 // Illustrate:
 // Support for virtual BusyBox commands,
-// such as `cat`, `ls`, and `cd`, including some custom commands.
+// Such as `cat`, `ls`, and `cd`, including some custom commands.
 //
 // Class:
 // - DefineCommandOutput: Define terminal commands. {
-//   termIO: Includes standard output, error messages,
-//           and the command execution return value.
+//   TermIO: Includes standard output, error messages,
+//           And the command execution return value.
 //           { stdout, stderr, exitCode }
-//   getCmd: Hand the command over to the just-bash module for processing.
-//   handleHello: Display "hello" in the terminal when the user says hello.
+//   GetCmd: Hand the command over to the just-bash module for processing.
+//   HandleHello: Display "hello" in the terminal when the user says hello.
 // }
 //
 // Functions:
 // - handleCommand: When a user enters a command in the terminal,
-//                  the input is passed to the `Bash` process;
-//                  the output is then retrieved via `response.stdout`,
-//                  with extra newline characters removed to prevent formatting issues.
+//                  The input is passed to the `Bash` process;
+//                  The output is then retrieved via `response.stdout`,
+//                  With extra newline characters removed to prevent formatting issues.
 //
 
 import type { Terminal } from "@xterm/xterm";
 import { Bash, defineCommand } from "just-bash";
-import { pipeline } from "@huggingface/transformers";
 
 /**
  * @file Frontend virtual file system
@@ -55,17 +54,17 @@ class DefineCommandOutput {
    * term.write(`${colors.cyan}USAGE:${colors.reset}\n`);
    */
   public termIO = {
-    stdout: "[info]",
-    stderr: "",
-    exitCode: 0,
     ansi: {
-      reset: "\x1b[0m",
-      bold: "\x1b[1m",
-      red: "\x1b[31m",
-      green: "\x1b[32m",
-      yellow: "\x1b[33m",
-      cyan: "\x1b[36m",
+      bold: "\u001B[1m",
+      cyan: "\u001B[36m",
+      green: "\u001B[32m",
+      red: "\u001B[31m",
+      reset: "\u001B[0m",
+      yellow: "\u001B[33m",
     },
+    exitCode: 0,
+    stderr: "",
+    stdout: "[info]",
   };
 
   public handleHello(args: string[]) {
@@ -74,9 +73,9 @@ class DefineCommandOutput {
      * NOTE: This is test command, will be removed in the future.
      */
     return {
-      stdout: this.termIO.stdout + "hello" + " " + args.join(" "),
-      stderr: this.termIO.stderr,
       exitCode: this.termIO.exitCode,
+      stderr: this.termIO.stderr,
+      stdout: `${this.termIO.stdout}hello ${args.join(" ")}`,
     };
   }
 
@@ -109,12 +108,12 @@ class DefineCommandOutput {
           "enabled",
         );
         return {
-          stdout: "Emmmm... Downloading models needs take a while.",
-          stderr: "",
           exitCode: 0,
+          stderr: "",
+          stdout: "Emmmm... Downloading models needs take a while.",
         };
       } else if (typeof naturalLangSearchStatus !== "string") {
-        return { stdout: "Emmmm.....", stderr: "", exitCode: 1 };
+        return { exitCode: 1, stderr: "", stdout: "Emmmm....." };
       }
     }
 
@@ -122,46 +121,52 @@ class DefineCommandOutput {
      * @param naturalLangSearchStatus - Save model switch state.
      */
     if (naturalLangSearchStatus === "enabled") {
-      const generator = await pipeline(
-        "text2text-generation",
-        "Xenova/LaMini-Flan-T5-783M",
-      );
-
-      /**
-       * Generate text content based on the model.
-       * @bug It seems that you cannot directly assign a value
-       *      using the form `const outputa = output.b`. (fixed)
-       * @workaround The current compromise is to use `const genOutput = JSON.stringify(output)` to convert the
-       *             data to a string and then print it directly.
-       * @note When using `console.log(output)`, it returns type Array.
-       *
-       * @constant { Array }
-       */
-      const output = await generator("how can I become more healthy?", {
-        max_new_tokens: 100,
-      });
-
-      /**
-       * To solve this problem, first define an object named `TextGenerationOutput` in
-       * the file header, then define the type of the variable `genOutput` as string, and
-       * return an empty string if `result[0]?.generated_text` has no result.
-       *
-       * @example `console.log(output)`
-       *          `const genOutput = JSON.stringify(output)`
-       */
-      const result = output as TextGenerationOutput[];
-      const genOutput: string = result[0]?.generated_text ?? "";
-      return {
-        stdout: genOutput,
-        stderr: this.termIO.stderr,
-        exitCode: this.termIO.exitCode,
-      };
+      try {
+        const { pipeline } = await import("@huggingface/transformers"),
+          generator = await pipeline(
+            "text2text-generation",
+            "Xenova/LaMini-Flan-T5-783M",
+          ),
+          /**
+           * Generate text content based on the model.
+           * @bug It seems that you cannot directly assign a value
+           *      using the form `const outputa = output.b`. (fixed)
+           * @workaround The current compromise is to use `const genOutput = JSON.stringify(output)` to convert the
+           *             data to a string and then print it directly.
+           * @note When using `console.log(output)`, it returns type Array.
+           *
+           * @constant { Array }
+           */
+          output = await generator("how can I become more healthy?", {
+            max_new_tokens: 100,
+          }),
+          /**
+           * To solve this problem, first define an object named `TextGenerationOutput` in
+           * the file header, then define the type of the variable `genOutput` as string, and
+           * return an empty string if `result[0]?.generated_text` has no result.
+           *
+           * @example `console.log(output)`
+           *          `const genOutput = JSON.stringify(output)`
+           */
+          result = output as TextGenerationOutput[],
+          genOutput: string = result[0]?.generated_text ?? "";
+        return {
+          exitCode: this.termIO.exitCode,
+          stderr: this.termIO.stderr,
+          stdout: genOutput,
+        };
+      } catch (error) {
+        console.warn(
+          "You should install transformers to enable local natural language feature.",
+          error,
+        );
+      }
     }
 
     return {
-      stdout: this.termIO.stdout,
-      stderr: this.termIO.stderr,
       exitCode: this.termIO.exitCode,
+      stderr: this.termIO.stderr,
+      stdout: this.termIO.stdout,
     };
   }
 
@@ -214,12 +219,14 @@ export async function handleCommand(cmdline: string, term: Terminal) {
   /**
    * @summary Remove extra spaces and line breaks.
    */
-  if (!cmdline.trim()) return;
+  if (!cmdline.trim()) {
+    return;
+  }
   const response = await bash.exec(cmdline);
   if (response.stdout) {
-    term.write(response.stdout.replace(/\r?\n/g, "\r\n"));
+    term.write(response.stdout.replaceAll(/\r?\n/g, "\r\n"));
   }
   if (response.stderr) {
-    term.write(response.stderr.replace(/\r?\n/g, "\r\n"));
+    term.write(response.stderr.replaceAll(/\r?\n/g, "\r\n"));
   }
 }

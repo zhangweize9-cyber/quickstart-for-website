@@ -10,14 +10,14 @@
 //
 // Illustrate:
 // Search for files in the terminal to provide basic busybox command support,
-// based on the xterm framework,
-// busybox support based on the just-bash framework.
+// Based on the xterm framework,
+// Busybox support based on the just-bash framework.
 //
 // Functions:
 // - termWindowsMountTohtml: Mount the terminal window to the `index.html` file.
 // - printPrompt: Print the command prompt in the terminal.
 // - termInputOnEnter: After pressing Enter in the terminal, the output is displayed,
-//                     and the input is passed to `just-bash` for execution.
+//                     And the input is passed to `just-bash` for execution.
 // - termInputOnBackspace: Delete the character in the terminal when the Backspace key is pressed.
 //
 
@@ -74,33 +74,33 @@ interface stdTermEsc {
 const escapeSeq: stdTermEsc = {
   ansi: {
     arrows: {
-      up: "\x1b[A",
-      down: "\x1b[B",
-      left: "\x1b[C",
-      right: "\x1b[D",
+      down: "\u001B[B",
+      left: "\u001B[C",
+      right: "\u001B[D",
+      up: "\u001B[A",
     },
     cursor: {
-      hide: "\x1b[?25l",
-      show: "\x1b[?25h",
-      save: "\x1b[s",
-      restore: "\x1b[u",
+      hide: "\u001B[?25l",
+      restore: "\u001B[u",
+      save: "\u001B[s",
+      show: "\u001B[?25h",
       to: (line: number, col: number) =>
-        `\x1b[${line.toString()};${col.toString()}H`,
+        `\u001B[${line.toString()};${col.toString()}H`,
     },
     erase: {
-      line: "\x1b[2K",
-      lineEnd: "\x1b[K",
-      screen: "\x1b[2J",
-      scrollback: "\x1b[3J",
+      line: "\u001B[2K",
+      lineEnd: "\u001B[K",
+      screen: "\u001B[2J",
+      scrollback: "\u001B[3J",
     },
   },
   ascii: {
-    topLine: "\r\n",
-    space: " ",
-    backspace: "\u007f",
-    sigint: "\x03",
-    enter: "\r",
+    backspace: "\u007F",
     deleteChar: "\b \b",
+    enter: "\r",
+    sigint: "\u0003",
+    space: " ",
+    topLine: "\r\n",
   },
 };
 
@@ -113,7 +113,7 @@ const term = new Terminal({
   },
 });
 
-function termWindowsMountTohtml(term: Terminal) {
+function termWindowsMountTohtml() {
   /**
    * @summary Xterm plugins
    * @see {
@@ -131,9 +131,9 @@ function termWindowsMountTohtml(term: Terminal) {
    * @summary Attach the welcome message to the terminal,
    *          and display the terminal window and input prompt.
    */
-  const greetingsEl = document.getElementById("greetings");
+  const greetingsEl = document.querySelector("#greetings");
   const greetingsText = greetingsEl?.textContent || "";
-  const termInput = document.getElementById("terminal");
+  const termInput = document.querySelector("#terminal") as HTMLElement;
   if (termInput) {
     term.open(termInput);
   }
@@ -146,14 +146,14 @@ function termWindowsMountTohtml(term: Terminal) {
   window.addEventListener("resize", () => {
     fitAddon.fit();
   });
-  term.write(greetingsText?.replace(/\r?\n/g, escapeSeq.ascii.topLine));
+  term.write(greetingsText?.replaceAll(/\r?\n/g, escapeSeq.ascii.topLine));
 }
 
 function printPrompt() {
-  term.write(escapeSeq.ascii.topLine + "$ ");
+  term.write(`${escapeSeq.ascii.topLine}$ `);
 }
 
-async function termInputOnEnter(term: Terminal) {
+async function termInputOnEnter() {
   term.write(escapeSeq.ascii.topLine);
   try {
     if (inputBuffer.trim().length > 0) {
@@ -162,7 +162,7 @@ async function termInputOnEnter(term: Terminal) {
        * @example
        * term.write('You entered: ' + inputBuffer + '\r\n');
        */
-      term.write("You entered: " + inputBuffer + escapeSeq.ascii.topLine);
+      term.write(`You entered: ${inputBuffer}${escapeSeq.ascii.topLine}`);
       await handleCommand(inputBuffer, term);
     } else {
       term.write(escapeSeq.ascii.topLine);
@@ -173,7 +173,7 @@ async function termInputOnEnter(term: Terminal) {
   }
 }
 
-function termInputOnBackspace(term: Terminal) {
+function termInputOnBackspace() {
   /**
    * @summary When a user makes a mistake while entering a string,
    *          pressing the Backspace key deletes the character.
@@ -191,7 +191,7 @@ function termInputOnBackspace(term: Terminal) {
    *             while Arabic and Hebrew are arranged from right to left.
    */
   if (inputBuffer.length > 0) {
-    const chars = Array.from(inputBuffer);
+    const chars = [...inputBuffer];
     const lastChar = chars.pop();
     inputBuffer = chars.join("");
 
@@ -205,18 +205,20 @@ function termInputOnBackspace(term: Terminal) {
 }
 
 export function initTerminalSearch() {
-  termWindowsMountTohtml(term);
+  termWindowsMountTohtml();
   printPrompt();
 
-  term.onData(async function (e) {
+  term.onData(async (e) => {
     switch (e) {
-      case escapeSeq.ascii.enter:
-        await termInputOnEnter(term);
+      case escapeSeq.ascii.enter: {
+        await termInputOnEnter();
         break;
-      case escapeSeq.ascii.backspace:
-        termInputOnBackspace(term);
+      }
+      case escapeSeq.ascii.backspace: {
+        termInputOnBackspace();
         break;
-      case escapeSeq.ascii.sigint:
+      }
+      case escapeSeq.ascii.sigint: {
         /**
          * FIXME: It's currently difficult to capture the Ctrl+C signal because the Windows shortcuts
          *        for copy and paste are Ctrl+C and Ctrl+V.
@@ -228,11 +230,12 @@ export function initTerminalSearch() {
          *   @link https://github.com/xtermjs/xterm.js/issues/281
          * }
          */
-        term.write("^C\r\n" + escapeSeq.ascii.sigint);
+        term.write(`^C\r\n${escapeSeq.ascii.sigint}`);
         inputBuffer = "";
         printPrompt();
         break;
-      default:
+      }
+      default: {
         /**
          * It also enables echoing as you type in the terminal
          * (placing your input immediately after the prompt).
@@ -244,17 +247,18 @@ export function initTerminalSearch() {
           term.write(e);
         }
         break;
+      }
     }
   });
 }
 
 // WIP: ctrl-c key event hook
-// term.onKey(({ domEvent }) => {
-//   if (domEvent.ctrlKey && domEvent.key === 'c') {
-//     domEvent.preventDefault();
-//     term.write('^C\r\n')
+// Term.onKey(({ domEvent }) => {
+//   If (domEvent.ctrlKey && domEvent.key === 'c') {
+//     DomEvent.preventDefault();
+//     Term.write('^C\r\n')
 //   }
 // })
 //
-// term.open(document.getElementById('terminal'));
-// term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
+// Term.open(document.getElementById('terminal'));
+// Term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')

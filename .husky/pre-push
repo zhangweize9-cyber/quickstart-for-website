@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "[Check] Git push code strict check"
-git diff-tree --no-commit-id --name-only -r HEAD | grep -E '\.(ts|tsx|js|jsx)$' | xargs pnpm lint
+git diff-tree --no-commit-id --name-only -r HEAD | grep -E '\.(ts|tsx|js|jsx)$' | xargs pnpm oxlint
 
 STATUS=$?
 

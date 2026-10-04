@@ -5,13 +5,23 @@
     "perf": "error",
     "style": "warn",
     "suspicious": "error",
-    "pedantic": "error",
-    "nursery": "warn"
+    "pedantic": "warn",
+    "nursery": "off"
   },
   "rules": {
+    "one-var": "off",
+    "sort-keys": "off",
+    "unicorn/prefer-query-selector": "off",
+    "unicorn/no-hex-escape": "off",
+    "unicorn/escape-case": "off",
+    "require-unicode-regexp": "off",
     "no-unused-vars": "error",
-    "no-explicit-any": "warn",
-    "typescript/no-explicit-any": "error"
+    "no-explicit-any": "error",
+    "typescript/no-explicit-any": "warn",
+    "eqeqeq": "error"
+  },
+  "env": {
+    "browser": true
   },
   "ignorePatterns": [
     "dist",
