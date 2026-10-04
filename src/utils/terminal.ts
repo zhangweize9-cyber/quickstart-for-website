@@ -21,6 +21,7 @@
 // - termInputOnBackspace: Delete the character in the terminal when the Backspace key is pressed.
 //
 
+import { useEffect, useRef } from "react";
 import { FitAddon } from "@xterm/addon-fit";
 import { Terminal } from "@xterm/xterm";
 import { WebLinksAddon } from "@xterm/addon-web-links";
@@ -32,7 +33,11 @@ import { WebLinksAddon } from "@xterm/addon-web-links";
  *   @link https://github.com/vercel-labs/just-bash/blob/main/packages/just-bash/README.md#supported-commands
  * } for further information.
  */
-import { handleCommand } from "./utils/handle-cmd";
+import { handleCommand } from "./handle-cmd";
+
+interface TerminalProps {
+  greetingsText?: string;
+}
 
 /**
  * @see {
@@ -113,40 +118,54 @@ const term = new Terminal({
   },
 });
 
-function termWindowsMountTohtml() {
-  /**
-   * @summary Xterm plugins
-   * @see {
-   *   @link https://github.com/xtermjs/xterm.js#addons
-   * }
-   * @class FitAddon
-   * @class WebLinksAddon
-   */
-  const fitAddon = new FitAddon();
-  const weblinks = new WebLinksAddon();
-  term.loadAddon(fitAddon);
-  term.loadAddon(weblinks);
-
+export function termWindowsMountTohtml(options: TerminalProps = {}) {
   /**
    * @summary Attach the welcome message to the terminal,
    *          and display the terminal window and input prompt.
    */
-  const greetingsEl = document.querySelector("#greetings");
-  const greetingsText = greetingsEl?.textContent || "";
-  const termInput = document.querySelector("#terminal") as HTMLElement;
-  if (termInput) {
-    term.open(termInput);
-  }
-  fitAddon.fit();
+  const {
+    greetingsText = "Hello World! https://github.com/zhangweize9-cyber",
+  } = options;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const termRef = useRef<Terminal | null>(null);
+  useEffect(() => {
+    /**
+     * @summary Xterm plugins
+     * @see {
+     *   @link https://github.com/xtermjs/xterm.js#addons
+     * }
+     * @class FitAddon
+     * @class WebLinksAddon
+     */
+    const fitAddon = new FitAddon();
+    const weblinks = new WebLinksAddon();
+    term.loadAddon(fitAddon);
+    term.loadAddon(weblinks);
+    if (containerRef.current) {
+      term.open(containerRef.current);
+    }
+    termRef.current = term;
+    const timer = requestAnimationFrame(() => {
+      fitAddon.fit();
+      term.write(greetingsText);
+    });
+    const handleResize = () => {
+      fitAddon.fit();
+    };
 
-  /**
-   * @summary Listen for window resize events and dynamically
-   *          calculate the terminal window's width and height.
-   */
-  window.addEventListener("resize", () => {
-    fitAddon.fit();
-  });
-  term.write(greetingsText?.replaceAll(/\r?\n/g, escapeSeq.ascii.topLine));
+    /**
+     * @summary Listen for window resize events and dynamically
+     *          calculate the terminal window's width and height.
+     */
+    window.addEventListener("resize", handleResize);
+    return () => {
+      cancelAnimationFrame(timer);
+      window.removeEventListener("resize", handleResize);
+      term.dispose();
+      termRef.current = null;
+    };
+  }, [greetingsText]);
+  return { containerRef, termRef };
 }
 
 function printPrompt() {
@@ -208,7 +227,7 @@ function termInputOnBackspace() {
 }
 
 export function initTerminalSearch() {
-  termWindowsMountTohtml();
+  // termWindowsMountTohtml();
   printPrompt();
 
   term.onData(async (terminput) => {

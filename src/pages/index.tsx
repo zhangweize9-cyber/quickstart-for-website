@@ -1,36 +1,43 @@
-import { useEffect } from "react";
+import "@xterm/xterm/css/xterm.css";
+import { initTerminalSearch, termWindowsMountTohtml } from "@/utils/terminal";
+import React from "react";
 
-export default function TerminalPage() {
-  useEffect(() => {
-    const isMobile = window.innerWidth <= 768,
-     link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.id = "dynamic-layout-style";
-    link.href = isMobile
-      ? "/style/terminal-mobile.css"
-      : "/style/terminal-desktop.css";
+const cssFiles = ["/style/terminal-mobile.css", "/style/terminal-desktop.css"];
 
-    const oldLink = document.querySelector("#dynamic-layout-style");
-    if (oldLink) {oldLink.remove();}
-    document.head.append(link);
+function loadCssByInsides(allFiles: string[], indicesToLoad: number[]) {
+  indicesToLoad.forEach((index) => {
+    const files = allFiles[index];
+    if (files) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = files;
+      document.head.append(link);
+    }
+  });
+}
 
-    import("@/terminal-search").then((m) => {
-      m.initTerminalSearch();
-    });
+export const TerminalPage: React.FC = () => {
+  const isMobile =
+    typeof globalThis.window !== "undefined" && globalThis.innerWidth <= 768;
+  if (isMobile) {
+    loadCssByInsides(cssFiles, [0]);
+  } else {
+    loadCssByInsides(cssFiles, [1]);
+  }
 
-    return () => {
-      link.remove();
-    };
-  }, []);
+  const { containerRef } = termWindowsMountTohtml();
+  initTerminalSearch();
 
   return (
     <>
       <div id="greetings" style={{ display: "none" }}>
         Hello World! https://github.com/zhangweize9-cyber
       </div>
-      <div className="terminal-wrapper">
-        <div id="terminal"></div>
+      <div>
+        <div ref={containerRef}></div>
       </div>
     </>
   );
-}
+};
+
+export default TerminalPage;
