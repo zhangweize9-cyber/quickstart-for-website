@@ -21,8 +21,8 @@
 // - termInputOnBackspace: Delete the character in the terminal when the Backspace key is pressed.
 //
 
-import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { Terminal } from "@xterm/xterm";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 
 /**
@@ -195,7 +195,10 @@ function termInputOnBackspace() {
     const lastChar = chars.pop();
     inputBuffer = chars.join("");
 
-    const isWide = lastChar && lastChar.charCodeAt(0) > 255;
+    const isWide =
+      lastChar &&
+      lastChar.codePointAt(0) !== undefined &&
+      lastChar.codePointAt(0)! > 255;
     if (isWide) {
       term.write("\b\b \b\b");
     } else {
@@ -208,8 +211,8 @@ export function initTerminalSearch() {
   termWindowsMountTohtml();
   printPrompt();
 
-  term.onData(async (e) => {
-    switch (e) {
+  term.onData(async (terminput) => {
+    switch (terminput) {
       case escapeSeq.ascii.enter: {
         await termInputOnEnter();
         break;
@@ -242,9 +245,9 @@ export function initTerminalSearch() {
          * TODO: When the Tab key is pressed to trigger autocomplete,
          *       the completion options (WIP) pop up.
          */
-        if (e >= " " || e === "\t") {
-          inputBuffer += e;
-          term.write(e);
+        if (terminput >= " " || terminput === "\t") {
+          inputBuffer += terminput;
+          term.write(terminput);
         }
         break;
       }

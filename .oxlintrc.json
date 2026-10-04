@@ -9,11 +9,14 @@
     "nursery": "off"
   },
   "rules": {
+    "func-style": "off",
+    "no-magic-numbers": "off",
+    "max-statements": "off",
     "one-var": "off",
     "sort-keys": "off",
-    "unicorn/prefer-query-selector": "off",
-    "unicorn/no-hex-escape": "off",
-    "unicorn/escape-case": "off",
+    "unicorn/prefer-query-selector": "error",
+    "unicorn/no-hex-escape": "error",
+    "unicorn/escape-case": "error",
     "require-unicode-regexp": "off",
     "no-unused-vars": "error",
     "no-explicit-any": "error",
