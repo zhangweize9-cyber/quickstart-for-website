@@ -10,11 +10,16 @@
     "node": ">=20.0.0",
     "pnpm": ">=11.26.0"
   },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "oxlint -A all --deny-warnings",
+      "prettier --write"
+    ]
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
     "prepare": "husky"
   },
   "dependencies": {
@@ -28,6 +33,9 @@
     "json5": "^2.2.3",
     "just-bash": "^3.4.2",
     "memfs": "^4.79.0",
+    "next": "^16.3.8",
+    "nextra": "^4.6.1",
+    "nextra-theme-blog": "^4.6.1",
     "path-browserify": "^1.0.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "perf": "error",
+    "style": "warn",
+    "suspicious": "error",
+    "pedantic": "error",
+    "nursery": "warn"
+  },
+  "rules": {
+    "no-unused-vars": "error",
+    "no-explicit-any": "warn",
+    "typescript/no-explicit-any": "error"
+  },
+  "ignore": [
+    "dist",
+    ".next",
+    "node_modules"
+  ]
+}

@@ -24,7 +24,6 @@
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
-import "@xterm/xterm/css/xterm.css";
 
 /**
  * @file Virtual Busybox instruction set
@@ -33,7 +32,7 @@ import "@xterm/xterm/css/xterm.css";
  *   @link https://github.com/vercel-labs/just-bash/blob/main/packages/just-bash/README.md#supported-commands
  * } for further information.
  */
-import { handleCommand } from "./utils/handle-cmd.ts";
+import { handleCommand } from "./utils/handle-cmd";
 
 /**
  * @see {
@@ -105,6 +104,7 @@ const escapeSeq: stdTermEsc = {
   },
 };
 
+let inputBuffer = "";
 const term = new Terminal({
   cursorBlink: true,
   theme: {
@@ -131,8 +131,8 @@ function termWindowsMountTohtml(term: Terminal) {
    * @summary Attach the welcome message to the terminal,
    *          and display the terminal window and input prompt.
    */
-  const template = document.getElementById("greetings") as HTMLTemplateElement;
-  const greetingsText = template.content.textContent;
+  const greetingsEl = document.getElementById("greetings");
+  const greetingsText = greetingsEl?.textContent || "";
   const termInput = document.getElementById("terminal");
   if (termInput) {
     term.open(termInput);
@@ -152,10 +152,6 @@ function termWindowsMountTohtml(term: Terminal) {
 function printPrompt() {
   term.write(escapeSeq.ascii.topLine + "$ ");
 }
-
-termWindowsMountTohtml(term);
-printPrompt();
-let inputBuffer = "";
 
 async function termInputOnEnter(term: Terminal) {
   term.write(escapeSeq.ascii.topLine);
@@ -208,44 +204,49 @@ function termInputOnBackspace(term: Terminal) {
   }
 }
 
-term.onData(async function (e) {
-  switch (e) {
-    case escapeSeq.ascii.enter:
-      await termInputOnEnter(term);
-      break;
-    case escapeSeq.ascii.backspace:
-      termInputOnBackspace(term);
-      break;
-    case escapeSeq.ascii.sigint:
-      /**
-       * FIXME: It's currently difficult to capture the Ctrl+C signal because the Windows shortcuts
-       *        for copy and paste are Ctrl+C and Ctrl+V.
-       *        It's hard to determine whether a user presses Ctrl+C to terminate a terminal task
-       *        or to copy and paste content.
-       *        TL;DR: There is a conflict with the Ctrl+C shortcut.
-       *
-       * @see {
-       *   @link https://github.com/xtermjs/xterm.js/issues/281
-       * }
-       */
-      term.write("^C\r\n" + escapeSeq.ascii.sigint);
-      inputBuffer = "";
-      printPrompt();
-      break;
-    default:
-      /**
-       * It also enables echoing as you type in the terminal
-       * (placing your input immediately after the prompt).
-       * TODO: When the Tab key is pressed to trigger autocomplete,
-       *       the completion options (WIP) pop up.
-       */
-      if (e >= " " || e === "\t") {
-        inputBuffer += e;
-        term.write(e);
-      }
-      break;
-  }
-});
+export function initTerminalSearch() {
+  termWindowsMountTohtml(term);
+  printPrompt();
+
+  term.onData(async function (e) {
+    switch (e) {
+      case escapeSeq.ascii.enter:
+        await termInputOnEnter(term);
+        break;
+      case escapeSeq.ascii.backspace:
+        termInputOnBackspace(term);
+        break;
+      case escapeSeq.ascii.sigint:
+        /**
+         * FIXME: It's currently difficult to capture the Ctrl+C signal because the Windows shortcuts
+         *        for copy and paste are Ctrl+C and Ctrl+V.
+         *        It's hard to determine whether a user presses Ctrl+C to terminate a terminal task
+         *        or to copy and paste content.
+         *        TL;DR: There is a conflict with the Ctrl+C shortcut.
+         *
+         * @see {
+         *   @link https://github.com/xtermjs/xterm.js/issues/281
+         * }
+         */
+        term.write("^C\r\n" + escapeSeq.ascii.sigint);
+        inputBuffer = "";
+        printPrompt();
+        break;
+      default:
+        /**
+         * It also enables echoing as you type in the terminal
+         * (placing your input immediately after the prompt).
+         * TODO: When the Tab key is pressed to trigger autocomplete,
+         *       the completion options (WIP) pop up.
+         */
+        if (e >= " " || e === "\t") {
+          inputBuffer += e;
+          term.write(e);
+        }
+        break;
+    }
+  });
+}
 
 // WIP: ctrl-c key event hook
 // term.onKey(({ domEvent }) => {

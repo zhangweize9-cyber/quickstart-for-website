@@ -1,12 +1,11 @@
 #!/bin/bash
-echo "[Git Pre-Push Check] Created by husky, eslint."
-pnpm exec eslint
+echo "[Check] Git push code strict check"
+pnpm exec lint-staged
 
 STATUS=$?
 
 if [ $STATUS -ne 0 ]; then
-    echo "[Failed] Check failed!"
     exit 1
 fi
 
-echo "[Passed] Check passed!"
+echo "[Passed] Congratulations! Check passed!"

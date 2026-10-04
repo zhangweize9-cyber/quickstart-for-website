@@ -35,7 +35,7 @@ import { pipeline } from "@huggingface/transformers";
  *   @link https://docs.kernel.org/filesystems/index.html
  * }
  */
-import { virtualFS } from "./vir-filesystem.ts";
+import { virtualFS } from "./vir-filesystem";
 
 interface TextGenerationOutput {
   generated_text: string;
