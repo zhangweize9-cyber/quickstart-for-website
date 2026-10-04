@@ -12,7 +12,7 @@
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
-      "oxlint -A all --deny-warnings",
+      "oxlint -A all --deny-warnings -D correctness",
       "prettier --write"
     ]
   },
@@ -20,6 +20,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
+    "lint": "oxlint -A all --deny-warnings",
     "prepare": "husky"
   },
   "dependencies": {
@@ -49,21 +50,14 @@
     "@types/node": "^26.6.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.1.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "esbuild": "^0.28.2",
-    "eslint": "^10.11.0",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.12.0",
     "husky": "^9.1.7",
     "jiti": "^2.7.0",
     "typedoc": "^0.28.20",
     "typedoc-plugin-markdown": "^4.13.1",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.71.0",
-    "vite": "^8.3.1",
-    "vite-plugin-node-polyfills": "^0.28.0"
+    "typescript-eslint": "^8.71.0"
   }
 }
