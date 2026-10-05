@@ -21,7 +21,7 @@
 // - termInputOnBackspace: Delete the character in the terminal when the Backspace key is pressed.
 //
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { FitAddon } from "@xterm/addon-fit";
 import { Terminal } from "@xterm/xterm";
 import { WebLinksAddon } from "@xterm/addon-web-links";
@@ -118,7 +118,7 @@ const term = new Terminal({
   },
 });
 
-export function termWindowsMountTohtml(options: TerminalProps = {}) {
+export function useTermWindowsMountTohtml(options: TerminalProps = {}) {
   /**
    * @summary Attach the welcome message to the terminal,
    *          and display the terminal window and input prompt.
@@ -128,7 +128,7 @@ export function termWindowsMountTohtml(options: TerminalProps = {}) {
   } = options;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const termRef = useRef<Terminal | null>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     /**
      * @summary Xterm plugins
      * @see {
