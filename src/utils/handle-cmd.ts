@@ -86,6 +86,18 @@ class DefineCommandOutput {
     };
   }
 
+  public handleOpenBlog(args: string[]) {
+    // openblog --homepage
+    if (args[0] === "--homepage") {
+      globalThis.location.href = "/blog";
+    }
+    return {
+      exitCode: this.termIO.exitCode,
+      stderr: this.termIO.stderr,
+      stdout: "Jump to blog page.",
+    };
+  }
+
   public async handleNaturalSearch(args: string[]) {
     if (args[0] === "--open") {
       this.enabledNaturalLanguageModule();
@@ -121,6 +133,9 @@ class DefineCommandOutput {
      */
     return [
       defineCommand("hello", (args) => Promise.resolve(this.handleHello(args))),
+      defineCommand("openblog", (args) =>
+        Promise.resolve(this.handleOpenBlog(args)),
+      ),
       defineCommand("natural-lang", (args) =>
         Promise.resolve(this.handleNaturalSearch(args)),
       ),
